@@ -19,4 +19,13 @@ public class CyclicRotate {
             }
         }
     }
+
+    public int[] rotateByN(int[] arrTest, int k) {
+        int[] result = new int[arrTest.length];
+        for (int i = 0; i < arrTest.length; i++) {
+            int idx = (i + k) % arrTest.length;
+            result[idx] = arrTest[i];
+        }
+        return result;
+    }
 }

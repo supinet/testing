@@ -1,3 +1,6 @@
+package interations;
+
+import iterations.CyclicRotate;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -11,6 +14,8 @@ import static org.junit.Assert.assertArrayEquals;
  * Created by supi on 6/4/18.
  */
 public class CyclicRotateTest {
+
+    private CyclicRotate cyclicRotate = new CyclicRotate();
 
     @Test
     public void collectionRotate() {
@@ -53,6 +58,25 @@ public class CyclicRotateTest {
         int[] expected = arr.clone();
         rotate(arr, 0);
         assertArrayEquals(expected, arr);
+    }
+
+    @Test
+    public void testRotateByN() {
+        int[] arrTest = {1, 2, 3, 4};
+        int[] arrExpectedOneRotate = {4, 1, 2, 3};
+        int[] arrExpectedTwoRotate = {3, 4, 1, 2};
+        int[] arrExpectedThreeRotate = {2, 3, 4, 1};
+        int[] arrExpectedFourRotate = {1, 2, 3, 4};
+
+        int[] resultOneRotate = cyclicRotate.rotateByN(arrTest, 1);
+        int[] resultTwoRotate = cyclicRotate.rotateByN(arrTest, 2);
+        int[] resultThreeRotate = cyclicRotate.rotateByN(arrTest, 3);
+        int[] resultFourRotate = cyclicRotate.rotateByN(arrTest, 4);
+
+        assertArrayEquals(resultOneRotate, arrExpectedOneRotate);
+        assertArrayEquals(resultTwoRotate, arrExpectedTwoRotate);
+        assertArrayEquals(resultThreeRotate, arrExpectedThreeRotate);
+        assertArrayEquals(resultFourRotate, arrExpectedFourRotate);
     }
 
 }

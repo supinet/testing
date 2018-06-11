@@ -1,3 +1,5 @@
+package interations;
+
 import iterations.BinaryGap;
 import org.junit.Assert;
 import org.junit.Test;
