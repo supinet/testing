@@ -5,10 +5,7 @@ import org.junit.Test;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 
@@ -65,18 +62,17 @@ public class NewJhonsPhotosTest {
         List<String> values = Arrays.asList(content.split("\n"));
         List<Photo> photos = new ArrayList<>();
         values.stream().forEach(v -> photos.add(createPhoto(v)));
-        Map<String, List<Photo>> citiesGroups = photos.stream().collect(Collectors.groupingBy(Photo::getCity));
+        Map<String, List<Photo>> citiesGroups = photos.stream().sorted().collect(Collectors.groupingBy(Photo::getCity));
 
         String cityKey = null;
         List<String> result = new ArrayList<>();
         for (Map.Entry<String, List<Photo>> entry : citiesGroups.entrySet()) {
             if (entry.getKey() != cityKey) {
                 dateTime = LocalDateTime.of(0000, 1, 1, 0, 0);
-                entry.getValue().stream().forEach(v -> {
+                //TODO: how to add left zero
+                photoIdx = entry.getValue().size() >= 01 ? 10 : 1;
+                entry.getValue().stream().sorted(Comparator.comparing(Photo::getDateTime)).forEach(v -> {
                     if (v.dateTime.compareTo(dateTime) > 0) {
-                        result.add(createResultPhoto(v, photoIdx));
-                        dateTime = v.dateTime;
-                    } else {
                         result.add(createResultPhoto(v, photoIdx));
                         dateTime = v.dateTime;
                     }
@@ -101,13 +97,21 @@ public class NewJhonsPhotosTest {
         return photo;
     }
 
-    public class Photo {
+    public class Photo implements Comparable<Photo>{
         String city;
         String extension;
         LocalDateTime dateTime;
 
         public String getCity() {
             return city;
+        }
+        public LocalDateTime getDateTime() {
+            return dateTime;
+        }
+
+        @Override
+        public int compareTo(Photo o) {
+            return getDateTime().compareTo(o.dateTime);
         }
     }
 }
