@@ -18,6 +18,7 @@ import java.util.stream.Collectors;
 public class NewJhonsPhotosTest {
 
     LocalDateTime dateTime;
+    int photoIdx = 0;
 
     @Test
     public void testSolution() {
@@ -72,10 +73,14 @@ public class NewJhonsPhotosTest {
             if (entry.getKey() != cityKey) {
                 dateTime = LocalDateTime.of(0000, 1, 1, 0, 0);
                 entry.getValue().stream().forEach(v -> {
-                    if ((v.dateTime != dateTime) && (v.dateTime.isAfter(dateTime))) {
-                        result.add(createResultPhoto(v));
+                    if (v.dateTime.compareTo(dateTime) > 0) {
+                        result.add(createResultPhoto(v, photoIdx));
+                        dateTime = v.dateTime;
+                    } else {
+                        result.add(createResultPhoto(v, photoIdx));
                         dateTime = v.dateTime;
                     }
+                    photoIdx++;
                 });
             }
         }
@@ -83,8 +88,8 @@ public class NewJhonsPhotosTest {
         return result.toString();
     }
 
-    private String createResultPhoto(Photo v) {
-        String result = v.city.concat(v.extension);
+    private String createResultPhoto(Photo v, int photoIdx) {
+        String result = v.city.concat(Integer.toString(photoIdx)).concat(v.extension);
         return result;
     }
 
