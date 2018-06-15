@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static java.util.Comparator.comparing;
 import static java.util.stream.Collectors.groupingBy;
@@ -20,7 +21,7 @@ import static java.util.stream.Collectors.groupingBy;
 public class NewJhonsPhotosTest {
 
     int photoIdx = 0;
-    String moreThanTen;
+    String moreTen;
 
     @Test
     public void testSolution() {
@@ -59,10 +60,34 @@ public class NewJhonsPhotosTest {
                         "f.png, Warsaw, 2016-01-02 10:55:32\n" +
                         "g.jpg, Warsaw, 2016-02-29 22:13:11";
 
-        Assert.assertEquals(result, solution(content));
+//        Assert.assertEquals(result, solutionByCity(content));
+        Assert.assertEquals(result, solutionByDate(content));
     }
 
-    public String solution(String content) {
+    private String solutionByDate(String content) {
+
+        List<String> values = Arrays.asList(content.split("\n"));
+        List<Photo> photos = new ArrayList<>();
+        values.stream().forEach(v -> photos.add(createPhoto(v)));
+        Map<LocalDateTime, List<Photo>> datesGroups = photos.stream().collect(groupingBy(p -> p.dateTime));
+        Map<String, Long> counted = photos.stream().collect(Collectors.groupingBy(p -> p.city, Collectors.counting()));
+        setupControllerDate(counted);
+        List<String> result = new ArrayList<>();
+        datesGroups.entrySet().stream().forEach(e -> {
+            result.add(e.getValue().stream().forEach(c -> {
+                createResultPhoto(c, photoIdx, moreTen);
+                photoIdx++;
+            });
+        });
+        return result.toString();
+    }
+
+    private void setupControllerDate(Map<String, Long> counted) {
+         counted.entrySet().stream().forEach(c -> moreTen = c.getValue() >= 10 ? "0" : "");
+         photoIdx = 1;
+    }
+
+    public String solutionByCity(String content) {
 
         List<String> values = Arrays.asList(content.split("\n"));
         List<Photo> photos = new ArrayList<>();
@@ -71,17 +96,17 @@ public class NewJhonsPhotosTest {
 
         List<String> result = new ArrayList<>();
         citiesGroups.entrySet().stream().forEach(e -> {
-            setupController(e);
+            setupControllerCity(e);
             e.getValue().stream().sorted(comparing(d -> d.dateTime)).forEach(v -> {
-                result.add(createResultPhoto(v, photoIdx, moreThanTen));
+                result.add(createResultPhoto(v, photoIdx, moreTen));
                 photoIdx++;
             });
         });
         return result.toString();
     }
 
-    private void setupController(Map.Entry<String, List<Photo>> entry) {
-        moreThanTen = entry.getValue().size() >= 10 ? "0" : "";
+    private void setupControllerCity(Map.Entry<String, List<Photo>> entry) {
+        moreTen = entry.getValue().size() >= 10 ? "0" : "";
         photoIdx = 1;
     }
 
@@ -102,18 +127,9 @@ public class NewJhonsPhotosTest {
         return photo;
     }
 
-    public class Photo implements Comparable<Photo> {
+    public class Photo {
         String city;
         String extension;
         LocalDateTime dateTime;
-
-        public LocalDateTime getDateTime() {
-            return dateTime;
-        }
-
-        @Override
-        public int compareTo(Photo o) {
-            return getDateTime().compareTo(o.dateTime);
-        }
     }
 }
